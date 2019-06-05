@@ -1,11 +1,3 @@
-% This is samplepaper.tex, a sample paper demonstrating the
-% LLNCS class package for the SMU Data Science Review Journal;
-%
-% This sample paper is a modified version of samplepaper.tex for
-% the Springer Computer Science proceedings; Version 2.20 of 2017/10/04
-%
-% Version 1.0 2019/06/03
-
 % Use the llncs.cls formatting
 \documentclass{llncs}
 
@@ -30,7 +22,6 @@ Daniel Serna\inst{1} \and
 James Vasquez\inst{1,2} \and
 Donald Markley\inst{2}
 }
-
 % The Institutes and emails associated with each author. All students
 % should use their MSDS affiliation or a generic SMU affiliation.
 % Advisors should use their appropriate affiliation. Note that advisors
@@ -42,9 +33,8 @@ Donald Markley\inst{2}
 Master of Science in Data Science, Southern Methodist University,
 Dallas TX 75275 USA 
 \email{\{dserna,vasquezj\}@smu.edu} \and
-Triple Crown Resources. ZipCode City, State
-\email{corporatesponser@email.com} \\
-\url{http://www.companywebsite.com}
+Triple Crown Resources, Dallas TX 75201 USA
+\email{dmarkley@triplecrownresources.com} \\
 }
 
 % Begin the document
@@ -57,8 +47,6 @@ Triple Crown Resources. ZipCode City, State
 % The abstract environment uses the \begin{} and \end{} constructs to 
 % denote the beginning and ending of the abstract contents.
 \begin{abstract}
-%The abstract should briefly summarize the contents of the paper in
-%150--250 words.  The abstract should contain approximately six sentences contained within a single paragraph. The first sentence typically begins with ``In this paper, we present'' which is then followed by what is presented in the paper.  The second sentence is used to motivate the importance of what is presented and define the broad problem domain. Then, two to three sentences are used to state how the problem was solved. A single statement of the main result (singular) is then followed by a single statement of the main conclusion (singular).
 In this paper we present a means of predicting when a slide event will occur in horizontal drilling operations. Optimizing horizontal drill operations to reduce slide events yields significant benefit in terms of cost and time. We achieve this benefit by creating a predictive model based on a number of features present in time series data provided by Triple Crown Resources.
 
 % Keywords may be used, but they are not required.
@@ -69,23 +57,28 @@ In this paper we present a means of predicting when a slide event will occur in 
 % command -- where "Section Name" is the name you give to the Section.
 \section{Introduction}
 
-Drilling a well has many moving parts in order to reach total depth (TD) of the well. Triple Crown Resources (TCR) has requested to gain insight in an issue that has the potential to reduce the time to reach TD. While drilling in a horizontal fashion the sensors on the drill record the rate of penetration (ROP), the higher the ROP the faster it drill through the subsurface rock. A stable and higher ROP will allow the drilling operations reach TD faster. The current issue is that the drill reduces ROP or slides instead of rotating through the subsurface rock. The sliding causes a dramatic decrease in ROP, which ultimately takes longer to reach TD when dealing with slide events while drilling.
+Drilling a well involves many moving parts to reach total depth (TD) of the well. Triple Crown Resources (TCR) wishes to gain insight into an issue that has the potential to reduce the time to reach TD. While drilling in a horizontal fashion, drill sensors record the rate of penetration (ROP). The higher the ROP, the quicker the drill penetrates through the subsurface rock. A stable and higher ROP will allow the drilling operations to reach TD faster. The issue at hand involves a drill state known as sliding. When a drill is sliding, ROP is greatly reduced which ultimately increases the time to reach TD.
 
-We will determine the probability of a slide event occuring within a specified time frame in horizontal drilling operations.  
+We will determine the probability of a slide event occurring within a specified time frame in horizontal drilling operations. Using time series data provided by TCR, we will create a predictive model to achieve this goal.
 
-TCR has access to all sensor data of 21 wells and growing. The data is captured at ever second while drilling, due to this the amount of data is very massive. It was the team decision to take samples of the data every 10 seconds, which reduced the amount of rows to 2.98 million rows of data. In addition to this the data contained 506 features.
+TCR has access to proprietary sensor data of 21 wells currently and the well count is increasing. Data points are captured every second while drilling resulting in an extremely large dataset. Due to the size of the dataset, it is the team's decision to take samples of the data every 10 seconds. This decision reduced the amount of data to 2.98 million records initially which is more feasible to consume.
 
-Data reduction was the first step into limiting the data, using SpotFire a visualization tool the team removed columns that had NULL values, columns with only 1 number in it, and took a cut off of 90\% data filled in. These items reduced the features to 122 columns for initial analysis. Working with TCR it was indicated that rows of data could be limited to rows with an inclination 85 degrees or higher. This inclination indicates that this is the horizontal portion of the well and not the vertical section. This business knowledge reduced the initial data set to 725K rows of data.
+The dataset initially contained 506 features. The team decided to reduce the number of features to further reduce the size of the dataset. The team removed columns only containing NULL values or single values. In addition, the team removed columns that contained less than 90\% of filled values. These decisions reduced the feature count for initial analysis down to 122.
+
+In addition, our corporate partners provided business insight that allowed us to further reduce the size of our dataset. TCR indicates records with an inclination value greater than or equal to 85 degrees is relevant to our problem domain. This inclination value indicates the record is related to the horizontal section of the well which is the focus of our problem statement. Removing records not meeting this criteria reduced our initial dataset to 725,000 records.
 
 % A second section is begun with another \section{} command
 \section{History}
-The Permian Basin stretches from lower the Southern portion of New Mexico and extends to much of West Texas. In geological terms the basin was formed during the Paleozoic Era which during this time range from shallow seas to vibrant oceans. From the geological timeline much of the structures which ultimately formed the traps for hydrocarbon were created during the late Paleozoic Era [Brit Refer] (251 million years ago).
+The Permian Basin stretches from the lower Southern portion of New Mexico and extends to much of West Texas. This basin was formed during the Paleozoic era. From the geological timeline, much of the structures which ultimately formed the traps for hydrocarbon were created during the late Paleozoic Era (251 million years ago).
+\footnote[1] {Tang, Carol Marie. “Permian Basin.” Encyclopedia Britannica, Encyclopedia Britannica, Inc., 25 May 2015, www.britannica.com/place/Permian-Basin. [Accessed 3 June 2019]}
 
-First oil produced from the basin started in the middle of 1920’s, the first major activity during the basins life was during the 1950s [Global Refer]. Much of this data is still used today to deliver control points of the basin. These control points help geologist map different formations in the subsurface
+Oil was first produced from the basin in the middle of the 1920’s, and major activity started during the 1950s. Much of the data from these early periods is still used today to deliver control points of the basin. These control points help geologists map different formations in the subsurface layers.
+\footnote[2] {Rapier, Robert. “Fracking Has Been around since 1949, Why the Recent Controversy?”, Global Energy Initiative, 1 Dec. 2014, globalenergyinitiative.org/insights/58-fracking-has-been-around-since-1949-why-. [Accessed 3 June 2019]}
 
-Though the basin has been producing for more than five decades a technology that has evolved brought additional life into the basin. Hydraulic fracturing has been around since 1949 but it wasn’t till the early 2000’s that with a combination of horizontal drilling and fracking that an old technology brought a basin back to life. The ability to drill in a horizontal direction to stay within a formation gave an unprecedented way to drain reservoirs that were once thought to be on a decline for producing hydrocarbons.
+Though the basin has been producing for more than five decades, new technology emerged that brought additional life to the basin in recent years. Hydraulic fracturing ("fracking") has been around since 1949, but it was not until the early 2000’s that fracking was combined with  horizontal drilling techniques. The ability to drill in a horizontal direction to stay within a formation gave an unprecedented way to drain reservoirs that were once thought to be on the decline for producing hydrocarbons.
 
-A leap in technology and computer power leaped many industries including Energy into Big Data Analytics. However, it was the velocity of data being captured that complicated items [SD refer]. Specifically, when monitoring real time drilling sensors are capturing data every second.  Many in the industry were not experience in how to analyze and make the best use of this data.  With the market drop in 2014 it was first seen that Energy companies starting to treat data as an asset and put effort and recruit talent that could make the most out of data that has been sitting in 3rd party vendor databases.
+A leap in technology and computing power thrust many industries, including Energy, into Big Data Analytics. However, the velocity of the data captured proved to complicate analysis for the Energy industry.\footnote[3] {Mohammadpoor, Mehdi. “Big Data Analytics in Oil and Gas Industry: An Emerging Trend.” Petroleum, Elsevier, 1 Dec. 2018, www.sciencedirect.com/science/article/pii/S2405656118301421. [Accessed 3 June 2019]} Specifically, real time drilling sensors capture data every second. Many in the industry were not experienced in how to analyze and make the best use of this data. With the market drop in 2014, Energy companies began to realize this data was a valuable asset. Efforts were put forth to recruit talent that could make use of these large datasets that had been sitting idle in 3rd party vendor databases.
+
 
 %
 % ---- Bibliography ----
